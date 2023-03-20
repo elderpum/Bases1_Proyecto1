@@ -1,0 +1,10 @@
+DROP TABLE VictimaTratamiento;
+DROP TABLE VictimaAsociado;
+DROP TABLE VictimaHospital;
+DROP TABLE VictimaUbicacion;
+DROP TABLE VictimaVirus;
+DROP TABLE Hospital;
+DROP TABLE Tratamiento;
+DROP TABLE Ubicacion;
+DROP TABLE Contacto;
+DROP TABLE Asociado;
