@@ -22,4 +22,4 @@ CREATE TABLE Temporal(
     FechaInicioTratamiento DATE,
     FechaFinTratamiento DATE,
     EfectividadEnVictima NUMBER
-)
+);
