@@ -44,7 +44,7 @@ JOIN VictimaTratamiento vt ON vt.IdVictima = vv.IdVictima
 JOIN VictimaUbicacion vu ON vu.IdVictima = vv.IdVictima 
 JOIN Ubicacion u ON u.IdUbicacion = vu.IdUbicacion 
 JOIN Tratamiento t ON t.IdTratamiento = vt.IdTratamiento 
-WHERE u.Direccion = '1987 Delphine Well' AND t.Tratamiento = 'Manejo de la presion arterial'
+WHERE u.Direccion = '1987 Delphine Well' AND t.Tratamiento = 'Manejo de la presion arterial' AND vv.FechaMuerte IS NOT NULL
 ORDER BY vv.NombreVictima, vv.ApellidoVictima ASC;
 
 -- Consulta 7 -- COUNT(DISTINCT VA.IdAsociado) AS Asociados -- JOIN VictimaAsociado va ON VA.IdVictima = VV.IdVictima -- JOIN VictimaHospital vh ON VH.IdVictima = VV.IdVictima  -- COUNT(DISTINCT VA.IdAsociado) <= 2 AND

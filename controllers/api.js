@@ -525,8 +525,8 @@ const consulta6 = async (req = request, res = response) => {
     JOIN VictimaUbicacion vu ON vu.IdVictima = vv.IdVictima 
     JOIN Ubicacion u ON u.IdUbicacion = vu.IdUbicacion 
     JOIN Tratamiento t ON t.IdTratamiento = vt.IdTratamiento 
-    WHERE u.Direccion = '1987 Delphine Well' AND t.Tratamiento = 'Manejo de la presion arterial'
-    ORDER BY vv.NombreVictima, vv.ApellidoVictima ASC
+    WHERE u.Direccion = '1987 Delphine Well' AND t.Tratamiento = 'Manejo de la presion arterial' AND vv.FechaMuerte IS NOT NULL
+    ORDER BY vv.NombreVictima, vv.ApellidoVictima ASC;
     `);
     await createConnec.close();
 
