@@ -356,6 +356,339 @@ const insertModelo = async (req = request, res = response) => {
   }
 };
 
+const consulta1 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT h.NombreHospital, h.DireccionHospital, COUNT(vh.FechaRetiro) AS NumeroFallecidos
+    FROM Hospital h
+    LEFT JOIN VictimaHospital vh ON h.IdHospital = vh.IdHospital
+    WHERE vh.FechaRetiro IS NOT NULL
+    GROUP BY h.IdHospital, h.NombreHospital, h.DireccionHospital
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #1 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #1",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
+const consulta2 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT VV.NombreVictima, VV.ApellidoVictima FROM VictimaVirus vv 
+    JOIN VictimaTratamiento vt ON VV.IdVictima = VT.IdVictima 
+    JOIN Tratamiento t ON T.IdTratamiento = VT.IdTratamiento
+    WHERE VT.EfectividadVictima > 5 AND VT.IdTratamiento = 2
+    ORDER BY vv.NombreVictima ASC
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #2 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #2",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
+const consulta3 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT DISTINCT VV.NombreVictima , VV.ApellidoVictima, vv.DireccionVictima, COUNT(VA.IdVictima) AS Asociados FROM VictimaVirus vv 
+    JOIN VictimaAsociado va ON VV.IdVictima = VA.IdVictima  
+    WHERE vv.FechaMuerte IS NOT NULL 
+    GROUP BY VA.IdVictima, VV.NombreVictima, VV.ApellidoVictima, vv.DireccionVictima
+    HAVING COUNT (VA.IdVictima) > 3
+    ORDER BY Asociados DESC
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #3 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #3",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
+const consulta4 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT DISTINCT vv.NombreVictima, vv.ApellidoVictima FROM VictimaVirus vv
+    JOIN VictimaAsociado va ON va.IdVictima = vv.IdVictima
+    JOIN Contacto c ON c.IdContacto = va.IdContacto
+    WHERE c.Tipo = 'Beso' AND vv.EstadoVictima = 'Suspendida'
+    GROUP BY vv.NombreVictima, vv.ApellidoVictima
+    HAVING COUNT(DISTINCT va.IdAsociado) > 2
+    ORDER BY vv.NombreVictima ASC
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #4 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #4",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
+const consulta5 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT DISTINCT vv.NombreVictima, vv.ApellidoVictima, COUNT(vt.IdVictima) AS Tratamientos FROM VictimaVirus vv
+    JOIN VictimaTratamiento vt ON vt.IdVictima = vv.IdVictima
+    JOIN Tratamiento t ON t.IdTratamiento = vt.IdTratamiento
+    WHERE t.Tratamiento = 'Oxigeno'
+    GROUP BY vt.IdVictima, vv.NombreVictima, vv.ApellidoVictima
+    ORDER BY Tratamientos DESC, vv.NombreVictima ASC
+    FETCH FIRST 5 ROWS ONLY
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #5 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #5",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
+const consulta6 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT vv.NombreVictima, vv.ApellidoVictima, vv.FechaMuerte FROM VictimaVirus vv 
+    JOIN VictimaTratamiento vt ON vt.IdVictima = vv.IdVictima 
+    JOIN VictimaUbicacion vu ON vu.IdVictima = vv.IdVictima 
+    JOIN Ubicacion u ON u.IdUbicacion = vu.IdUbicacion 
+    JOIN Tratamiento t ON t.IdTratamiento = vt.IdTratamiento 
+    WHERE u.Direccion = '1987 Delphine Well' AND t.Tratamiento = 'Manejo de la presion arterial'
+    ORDER BY vv.NombreVictima, vv.ApellidoVictima ASC
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #6 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #6",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
+const consulta7 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT DISTINCT VV.NombreVictima, VV.ApellidoVictima, VV.DireccionVictima, COUNT(DISTINCT VT.IdTratamiento) AS Tratamientos
+    FROM VictimaVirus vv
+    JOIN VictimaTratamiento vt ON VV.IdVictima = VT.IdVictima 
+    GROUP BY VV.IdVictima, VV.NombreVictima, VV.ApellidoVictima, VV.DireccionVictima
+    HAVING COUNT(DISTINCT VT.IdTratamiento) = 2
+    ORDER BY vv.NombreVictima, vv.ApellidoVictima ASC
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #7 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #7",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
+const consulta8 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT VV.NombreVictima, VV.ApellidoVictima, EXTRACT(MONTH FROM VV.FechaPrimeraSospecha) AS MES_SOS, COUNT(VT.IdTratamiento) AS NUM_TRAT
+    FROM VictimaVirus vv 
+    JOIN VictimaTratamiento vt ON VT.IdVictima = VV.IdVictima
+    GROUP BY VV.NombreVictima, VV.ApellidoVictima, EXTRACT(MONTH FROM VV.FechaPrimeraSospecha) 
+    HAVING COUNT(*) = (
+    SELECT MAX(NUM_TRAT)
+    FROM ( 
+	    SELECT COUNT(*) AS NUM_TRAT 
+	    FROM VictimaVirus vv2 
+	    JOIN VictimaTratamiento vt2 ON VV2.IdVictima = VT2.IdVictima 
+	    GROUP BY VV2.NombreVictima, VV2.ApellidoVictima 
+    )
+    ) UNION 
+    SELECT vv3.NombreVictima, vv3.ApellidoVictima, EXTRACT (MONTH FROM vv3.FechaPrimeraSospecha) AS MES_SOS, COUNT(VT3.IdTratamiento) AS NUM_TRAT 
+    FROM VictimaVirus vv3 
+    JOIN VictimaTratamiento vt3 ON VT3.IdVictima = VV3.IdVictima
+    GROUP BY VV3.NombreVictima, VV3.ApellidoVictima, EXTRACT(MONTH FROM VV3.FechaPrimeraSospecha)
+    HAVING COUNT(*) = (
+    SELECT MIN(NUM_TRAT)
+    FROM(
+	    SELECT COUNT(*) AS NUM_TRAT 
+	    FROM VictimaVirus vv3 
+	    JOIN VictimaTratamiento vt4 ON VV3.IdVictima = VT4.IdVictima 
+	    GROUP BY VV3.NombreVictima, VV3.ApellidoVictima 
+    )
+
+    )ORDER BY NUM_TRAT DESC
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #8 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #8",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
+const consulta9 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT h.NombreHospital, (Count(vv.IdVictima)/(SELECT COUNT(*) FROM VictimaHospital))*100 AS Porcentaje 
+    FROM VictimaVirus vv 
+    JOIN VictimaHospital vh ON vv.IdVictima = vh.IdVictima 
+    JOIN Hospital h ON vh.IdHospital = h.IdHospital 
+    GROUP BY h.NombreHospital
+    ORDER BY Porcentaje DESC
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #9 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #9",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
+const consulta10 = async (req = request, res = response) => {
+  try {
+    createConnec = await oracledb.getConnection({
+      user: username,
+      password: password,
+      connectString: connection,
+    });
+
+    const result = await createConnec.execute(`
+    SELECT h.NombreHospital, c.Tipo AS NombreContacto, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM VictimaHospital vh2 WHERE vh2.IdHospital = h.IdHospital) AS PorcentajeVictimas
+    FROM VictimaHospital vh
+    JOIN Hospital h ON vh.IdHospital = h.IdHospital
+    JOIN VictimaAsociado va ON vh.IdVictima = va.IdVictima
+    JOIN Contacto c ON va.IdContacto = c.IdContacto
+    GROUP BY h.IdHospital, c.Tipo, h.NombreHospital
+    ORDER BY h.NombreHospital, PorcentajeVictimas DESC
+    `);
+    await createConnec.close();
+
+    return res.status(201).json({
+      msg: "Consulta #10 realizada con éxito",
+      resultado: result,
+    });
+  } catch (error) {
+    console.error(error.message || JSON.stringify(error));
+    return res.status(401).json({
+      msg: "Error al realizar la consulta #10",
+      err: error.message || JSON.stringify(error),
+    });
+  }
+};
+
 module.exports = {
   deleteTemporal,
   createTemporal,
@@ -363,4 +696,14 @@ module.exports = {
   deleteModelo,
   createModelo,
   insertModelo,
+  consulta1,
+  consulta2,
+  consulta3,
+  consulta4,
+  consulta5,
+  consulta6,
+  consulta7,
+  consulta8,
+  consulta9,
+  consulta10,
 };
